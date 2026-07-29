@@ -167,7 +167,7 @@ def export():
                     r.get("name", ""),
                     r.get("email", ""),
                     r.get("phone", ""),
-                    r.get("created_at", "")
+                    r.get("created_at", "Not Available")
                 ]
             )
 
