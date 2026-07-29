@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Edit Record</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+Edit Record
+
+</div>
+
+<div class="card-body">
+
+<form method="POST"
+
+action="/update/{{record._id}}">
+
+<label>Name</label>
+
+<input
+class="form-control mb-3"
+name="name"
+value="{{record.name}}">
+
+<label>Email</label>
+
+<input
+class="form-control mb-3"
+name="email"
+value="{{record.email}}">
+
+<label>Phone</label>
+
+<input
+class="form-control mb-3"
+name="phone"
+value="{{record.phone}}">
+
+<button class="btn btn-success">
+
+Update Record
+
+</button>
+
+<a href="/"
+
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
