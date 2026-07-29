@@ -24,15 +24,10 @@ def home():
     if search:
 
         records = [
-
             r for r in records
-
-            if search.lower() in r["name"].lower()
-
-            or search.lower() in r["email"].lower()
-
-            or search.lower() in r["phone"].lower()
-
+            if search.lower() in r.get("name", "").lower()
+            or search.lower() in r.get("email", "").lower()
+            or search.lower() in r.get("phone", "").lower()
         ]
 
     total = total_records()
@@ -45,21 +40,13 @@ def home():
         success = "100%"
 
     return render_template(
-
         "index.html",
-
         records=records,
-
         total=total,
-
         verified=verified,
-
         duplicates=duplicate_counter,
-
         success_rate=success,
-
         search=search
-
     )
 
 
@@ -86,6 +73,7 @@ def add():
 
         return redirect("/")
 
+
     record = {
 
         "name": name,
@@ -99,6 +87,7 @@ def add():
         "created_at": datetime.now().strftime("%d-%m-%Y %H:%M")
 
     }
+
 
     insert_record(record)
 
@@ -123,11 +112,8 @@ def edit(id):
     record = get_record(id)
 
     return render_template(
-
         "edit.html",
-
         record=record
-
     )
 
 
@@ -156,40 +142,41 @@ def export():
 
     records = get_all_records()
 
-    with open("records.csv", "w", newline="") as file:
+    file_path = "records.csv"
+
+
+    with open(file_path, "w", newline="", encoding="utf-8") as file:
 
         writer = csv.writer(file)
 
+
         writer.writerow(
-
-            ["Name", "Email", "Phone", "Created"]
-
+            [
+                "Name",
+                "Email",
+                "Phone",
+                "Created"
+            ]
         )
+
 
         for r in records:
 
             writer.writerow(
-
                 [
-
-                    r["name"],
-
-                    r["email"],
-
-                    r["phone"],
-
-                    r["created_at"]
-
+                    r.get("name", ""),
+                    r.get("email", ""),
+                    r.get("phone", ""),
+                    r.get("created_at", "")
                 ]
-
             )
 
+
     return send_file(
-
-        "records.csv",
-
-        as_attachment=True
-
+        file_path,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="records.csv"
     )
 
 
