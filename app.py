@@ -22,7 +22,6 @@ def home():
     records = get_all_records()
 
     if search:
-
         records = [
             r for r in records
             if search.lower() in r.get("name", "").lower()
@@ -31,10 +30,11 @@ def home():
         ]
 
     total = total_records()
-
     verified = total
 
+    # Reset duplicate counter when all records are deleted
     if total == 0:
+        duplicate_counter = 0
         success = "0%"
     else:
         success = "100%"
@@ -56,38 +56,24 @@ def add():
     global duplicate_counter
 
     name = request.form["name"]
-
     email = request.form["email"]
-
     phone = request.form["phone"]
 
     duplicate = find_duplicate(email, phone)
-
     status = classify_record(duplicate)
 
     if status == "Duplicate":
-
         duplicate_counter += 1
-
         flash("Duplicate Record Detected!", "danger")
-
         return redirect("/")
 
-
     record = {
-
         "name": name,
-
         "email": email,
-
         "phone": phone,
-
         "verified": True,
-
-        "created_at": datetime.now().strftime("%d-%m-%Y %H:%M")
-
+        "created_at": datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     }
-
 
     insert_record(record)
 
@@ -99,7 +85,13 @@ def add():
 @app.route("/delete/<id>")
 def delete(id):
 
+    global duplicate_counter
+
     delete_record(id)
+
+    # Reset duplicate counter if no records remain
+    if total_records() == 0:
+        duplicate_counter = 0
 
     flash("Record Deleted Successfully!", "warning")
 
@@ -121,13 +113,9 @@ def edit(id):
 def update(id):
 
     data = {
-
         "name": request.form["name"],
-
         "email": request.form["email"],
-
         "phone": request.form["phone"]
-
     }
 
     update_record(id, data)
@@ -144,33 +132,24 @@ def export():
 
     file_path = "records.csv"
 
-
     with open(file_path, "w", newline="", encoding="utf-8") as file:
 
         writer = csv.writer(file)
 
-
-        writer.writerow(
-            [
-                "Name",
-                "Email",
-                "Phone",
-                "Created"
-            ]
-        )
-
+        writer.writerow([
+            "Name",
+            "Email",
+            "Phone",
+            "Created"
+        ])
 
         for r in records:
-
-            writer.writerow(
-                [
-                    r.get("name", ""),
-                    r.get("email", ""),
-                    r.get("phone", ""),
-                    r.get("created_at", "Not Available")
-                ]
-            )
-
+            writer.writerow([
+                r.get("name", ""),
+                r.get("email", ""),
+                r.get("phone", ""),
+                r.get("created_at", "Not Available")
+            ])
 
     return send_file(
         file_path,
@@ -181,5 +160,4 @@ def export():
 
 
 if __name__ == "__main__":
-
     app.run(debug=True)
